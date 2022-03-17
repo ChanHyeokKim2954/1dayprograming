@@ -1,0 +1,6 @@
+<launch>
+
+<node pkg="aeb_control" type="aeb_control_node" name="abe_control_node" output="screen" />
+<node pkg="aeb_control" type="aeb_sonar_msg_talker_node" name="aeb_sonar_msg_talker_node" output="screen" />
+
+</launch>
