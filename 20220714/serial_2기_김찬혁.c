@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
@@ -13,19 +12,13 @@
 #include <errno.h> 
 #include <unistd.h> 
 
-#define _USE_MATH_DEFINES
-typedef unsigned char BYTE;
-
 union
 {
-    short data ;
-    char  bytedata[2];
+    short send_data ;
+    char  send_bytedata[2];
 } m_crc;
  
 static int uart_fd;
-
-
-int crc_sumdata = 0;
 
 void write_serial(unsigned char *buf, int len)
 {
@@ -76,66 +69,75 @@ int init_serial_port(void)
 unsigned char buf_array[20]={0,};
 unsigned char buf_copy[10]={0,};
 unsigned char crc_copy[2]={0,};
+unsigned char buffer;
+unsigned char pre_buffer;
 
-int crc_checksum(void)
+int buf_Count = 0;
+int num = -1;
+
+int crc_sum(void)
 {
+	int crc_sumdata = 0;
 	for(int i = 1; i < 6; i++)	crc_sumdata += buf_copy[i];
 	return crc_sumdata;
 }
 
 void *readserial_thread(void *pt)
 {
-    int num = -1;
-    unsigned char buffer;
-    unsigned char pre_buffer;
-
     while(1)
     {
-     	while( (num = read(uart_fd, &buffer, 1)   ) > 0 )	
+     	while((num = read(uart_fd, &buffer, 1)) > 0 )	
         {
-		int buf_Count = 0;
-		if(buffer == '#' ) 	buf_array[buf_Count] = buffer ; 
+		if(buffer == '#' ) 
+		{
+			buf_array[buf_Count] = buffer ; 
+			buf_Count++ ;
+		}
 		else if( buffer == 'I' && pre_buffer =='#')
 		{
 			buf_array[0] = '#' ;
 			buf_Count = 1 ;
-			buf_array[buf_Count] = buffer ;                  
+			buf_array[buf_Count] = buffer ;
+			buf_Count++ ;                  
 		}	
-		else if(buf_Count = 2 || buf_Count = 3 || buf_Count = 4 || buf_Count = 5)
-			buf_array[buf_Count] = buffer ;
-		else if(buf_Count = 6 || buf_Count = 7)
-			buf_array[buf_Count] = buffer ;
-		else if( buffer == '*' ) 
+		else if(buf_Count >1 && buf_Count < 8)
 		{
 			buf_array[buf_Count] = buffer ;
+			buf_Count++ ;
+		}
+		else if( buffer == '*' ) 
+		{
+
 			if( buf_array[0] == '#'  && buf_array[1] == 'I' )     
 			{
+				buf_array[buf_Count] = buffer ;
+				buf_Count++ ;
 				memcpy(buf_copy, buf_array, buf_Count) ;
-				printf("Received Data:%x %x %x %x %x %x %x %x %x %x\t", 
-				       buf_copy[0],buf_copy[1],buf_copy[2],buf_copy[3],
-				       buf_copy[4],buf_copy[5],buf_copy[6],buf_copy[7],
-				       buf_copy[8],buf_copy[9]);
-				m_crc.data = crc_checksum();
-				//printf("%x	%x \n",m_crc.bytedata[1],m_crc.bytedata[0]);
-				if(m_crc.bytedata[1] == copy_readbuf[6] && m_crc.bytedata[0] == copy_readbuf[7])
+				for(int i = 0 ; i < 10 ; i++)	printf("%x ",buf_copy[i]);
+				m_crc.send_data = crc_sum();
+				if(m_crc.send_bytedata[1] == buf_copy[6] && m_crc.send_bytedata[0] == buf_copy[7])
 					printf("NORMAL \n");
 				else
 					printf("ERROR \n");
 			}
+			buf_Count = 0;
 		}                  
-		else	buf_array[buf_Count] = buffer ;
-		buf_Count++ ;
+		else
+		{
+			buf_array[buf_Count] = buffer ;
+			buf_Count++ ;
+		}
 		pre_buffer =  buffer;
 	}
     }
 }
-
 
 int main(void)
 {
   uart_fd = init_serial_port();
   pthread_t id_1;
   int ret1=pthread_create(&id_1,NULL,readserial_thread,NULL);
+  while(1)	sleep(1);
   close(uart_fd);
 
   return 0;
