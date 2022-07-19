@@ -33,5 +33,9 @@
 /*********************************************************************************************************************/
 void initLED(void);
 void blinkLED(void);
+void initLED_2(void);
+void blinkLED_2(void);
+void initLED_3(void);
+void blinkLED_3(void);
 
 #endif /* BLINKY_LED_H_ */
