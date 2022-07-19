@@ -1,44 +1,29 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include "Jeston_nano_GPIO.h"
 
-#define LED_GPIO_DIR "/sys/class/gpio"
-
-int main(){
- int  jks_gp,value, i;
- char buff[256];
- FILE *jetson_led_gpio;
+int  io_test, i;
+int value = 0;
+char buff[256];
+FILE *GPIO_LED;
  
+int main(){
  printf("gp:");
- scanf("%d",&jks_gp);
+ scanf("%d",&io_test);
 
- snprintf(buff,sizeof(buff),"%s/export",LED_GPIO_DIR);
- jetson_led_gpio = fopen(buff,"w");
- fprintf(jetson_led_gpio,"%d\n",jks_gp);
- fclose(jetson_led_gpio);
+ gpio_export(io_test);
+ gpio_set_dir(io_test,1);
 
- snprintf(buff,sizeof(buff),"%s/gpio%d/direction",LED_GPIO_DIR,jks_gp);
- jetson_led_gpio = fopen(buff,"w");
- fprintf(jetson_led_gpio,"out\n");
- fclose(jetson_led_gpio);
-
- snprintf(buff,sizeof(buff),"%s/gpio%d/value",LED_GPIO_DIR,jks_gp);
- jetson_led_gpio = fopen(buff,"w");
- setvbuf(jetson_led_gpio,NULL,_IONBF,0);
-  
- value = 0;
  while(1){
-  fprintf(jetson_led_gpio,"%d\n",value);
-  sleep(2);
-  if (value == 0)	value = 1;
-  else if (value == 1) value = 0;
+ gpio_set_value(io_test,value);
+ if(value == 0)	value = 1;
+ else	value = 0;
+ sleep(2);
  }
- fclose(jetson_led_gpio);
+ fclose(GPIO_LED);
 
- snprintf(buff,sizeof(buff),"%s/unexport",LED_GPIO_DIR);
- jetson_led_gpio = fopen(buff,"w");
- fprintf(jetson_led_gpio,"%d\n",jks_gp);
- fclose(jetson_led_gpio);
+ gpio_unexport(io_test);
 
  return 0;
 }
