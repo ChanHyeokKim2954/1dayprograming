@@ -3,28 +3,26 @@
 #define encoderPinA 2
 #define encoderPinB 3
 
-int count = 0;
+static volatile int32_t count = 0;
 
+void setup() {
+  Serial.begin(115200);
+  MsTimer2::set(100,encoderInterrupt);
+  MsTimer2::start();
+}
 void encoder()
 {
-  delayMicroseconds(100);
+  delayMicroseconds(10);
   if(digitalRead(encoderPinB) == LOW) count++;
   else                                count--;
 }
 void encoderInterrupt()
 {
-   attachInterrupt(digitalPinToInterrupt(encoderPinA), encoder, RISING);
-}
-void setup() {
-  Serial.begin(115200);
   pinMode(encoderPinA,INPUT_PULLUP);
   pinMode(encoderPinB,INPUT_PULLUP);
-  MsTimer2::set(100,encoderInterrupt);
-  MsTimer2::start();
+  attachInterrupt(0, encoder, RISING);
 }
-
 void loop() {
   Serial.print("encoder : ");
   Serial.println(count);
-  
 }
