@@ -17,7 +17,7 @@ int main(void)
 	HZ = RPM_DATA / 60;
 	PERIOD = (1 / (HZ * PULSE)) * 1000;
 
-	printf("1pulse¿« Period(ms) : %.2lf \n", PERIOD);
+	printf("Period(ms) of 1 pulse : %.2lf \n", PERIOD);
 
 	return 0;
 }
