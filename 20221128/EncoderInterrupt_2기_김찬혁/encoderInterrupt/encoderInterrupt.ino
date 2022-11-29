@@ -1,7 +1,7 @@
 #include <MsTimer2.h>
 
-#define encoderPinA 2
-#define encoderPinB 3
+#define encoderA 2
+#define encoderB 3
 
 static volatile int32_t count = 0;
 
@@ -13,13 +13,13 @@ void setup() {
 void encoder()
 {
   delayMicroseconds(10);
-  if(digitalRead(encoderPinB) == LOW) count++;
+  if(digitalRead(encoderB) == LOW) count++;
   else                                count--;
 }
 void encoderInterrupt()
 {
-  pinMode(encoderPinA,INPUT_PULLUP);
-  pinMode(encoderPinB,INPUT_PULLUP);
+  pinMode(encoderA,INPUT_PULLUP);
+  pinMode(encoderB,INPUT_PULLUP);
   attachInterrupt(0, encoder, RISING);
 }
 void loop() {
