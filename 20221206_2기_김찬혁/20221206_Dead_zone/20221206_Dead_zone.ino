@@ -1,6 +1,7 @@
 #include <MsTimer2.h>
 #define encodPinA1      2 
 #define encodPinB1      3                       // Quadrature encoder B pin
+#define check_pin       11
 #define DIR 4
 #define PWM 5
 volatile int32_t encoderPos = 0;
@@ -21,13 +22,12 @@ void interrupt_setup(void)
 
 void timer()
 {
-  static boolean output = HIGH;
-
-  output = !output;
+  digitalWrite(check_pin, HIGH);
   (fabs(encoderPos) <= 1) ? Dead_zone_pwm = pwm : Dead_zone_pwm = 0;
   pwm ++;
   //motor_control(1,pwm); //forward
   motor_control(-1,pwm); //backward
+  digitalWrite(check_pin, LOW); //항상 시작과 끝에 있어야됨
 }
 
 void motor_control(int Direction, int pwm)
@@ -54,6 +54,7 @@ void motor_control(int Direction, int pwm)
 
 void setup() {
   // put your setup code here, to run once:
+  pinMode(check_pin, OUTPUT);
   pinMode(DIR,OUTPUT);
   pinMode(PWM,OUTPUT);
   MsTimer2::set(50, timer); // 500ms period
