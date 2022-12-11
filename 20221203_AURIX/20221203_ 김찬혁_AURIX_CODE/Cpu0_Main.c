@@ -28,7 +28,7 @@
  * \abstract The ERU is used to generate an interrupt on each rising and falling edge at an input pin.
  * \description The code example uses the External Request Unit (ERU) to generate an interrupt for each
  *              falling and rising edge at an input pin. The falling and rising edges are generated
- *              with the pin P00.7 connected to the board’s button. If an interrupt occurs, an LED will be toggled.
+ *              with the pin P00.7 connected to the boardâ€™s button. If an interrupt occurs, an LED will be toggled.
  *
  * \name ERU_Interrupt_1_KIT_TC275_LK
  * \version V1.0.0
@@ -43,6 +43,7 @@
 #include "IfxScuWdt.h"
 #include "ERU_Interrupt.h"
 #include "Motor_control_pwm.h"
+#include "ASCLIN_UART.h"
 extern long encoderPos;
 IfxCpu_syncEvent g_cpuSyncEvent = 0;
 int core0_main(void)
