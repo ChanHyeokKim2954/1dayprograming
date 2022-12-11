@@ -15,7 +15,7 @@ float P = 0.4;
 float Pd = 1.0;
 float Pi = 0.5;
 
-int pid_pwm = 0, Dead_zone_pwm = 0, Dead_zone_pwm_old = 0;
+int pid_pwm = 0;
 float pos_error_sum = 0;
 
 #if ARDUINO >= 100
