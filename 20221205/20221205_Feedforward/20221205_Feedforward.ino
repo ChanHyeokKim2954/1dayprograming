@@ -24,6 +24,7 @@ const int led_pin = LED_BUILTIN;   // 1.0 built in LED pin var
 const int led_pin = 13;         // default to pin 13
 #endif
 
+void Feedforward(int pwm,int error_pos, int percent);
 void encoder_read()  
 {
   delayMicroseconds(5);
@@ -52,7 +53,7 @@ void timer()
   pos_error_sum = (pos_error_sum < -50) ? -50 : pos_error_sum;
   pid_pwm = (P * pos_error) + (Pd * pos_error_d) + (Pi * pos_error_sum); 
   //pid_pwm = (pid_pwm>=255) ? 255 : pid_pwm;
-  pid_pwm = (pos_error >= (double)target_Pos * 0.1) ? 255 : pid_pwm;
+  pid_pwm = Feedforward(pid_pwm,pos_error,0.1);
   
   if(fabs(pos_error)<=2) pos_error_sum = 0; 
   if(pid_pwm > 0) motor_control(1,pid_pwm);
@@ -60,6 +61,12 @@ void timer()
   encoderPos_old = encoderPos;
   pos_error_old = pos_error;
   digitalWrite(check_pin, LOW); //항상 시작과 끝에 있어야됨
+}
+
+int Feedforward(int pwm,int32_t error_pos, int percent)
+{
+  pwm = (error_pos >= (double)target_Pos * percent) ? 255 : pwm;
+  return pwm;
 }
 
 void motor_control(int Direction, int pwm)
