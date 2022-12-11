@@ -24,7 +24,6 @@ const int led_pin = LED_BUILTIN;   // 1.0 built in LED pin var
 const int led_pin = 13;         // default to pin 13
 #endif
 
-void Feedforward(int pwm,int error_pos, int percent);
 void encoder_read()  
 {
   delayMicroseconds(5);
