@@ -62,7 +62,7 @@ void timer()
   digitalWrite(check_pin, LOW); //항상 시작과 끝에 있어야됨
 }
 
-int Feedforward(int pwm,int32_t error_pos, int percent)
+int Feedforward(int pwm,int32_t error_pos, double percent)
 {
   pwm = (error_pos >= (double)target_Pos * percent) ? 255 : pwm;
   return pwm;
